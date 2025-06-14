@@ -1,2 +1,2 @@
-# travel-companion-app
+# Travel Companion App
 Tinder meets MakeMyTrip
