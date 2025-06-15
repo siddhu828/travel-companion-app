@@ -15,13 +15,17 @@ mongoose.connect(process.env.MONGO_URI, {
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB connection failed:', err));
 
-  const PORT = process.env.PORT || 5050;
+const PORT = process.env.PORT || 5050;
 
-app.get('/', (req, res) => {
-  res.send('API Running...');
-});
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
+
+const userRoutes = require('./routes/user');
+app.use('/api/user', userRoutes);
+
+const tripRoutes = require('./routes/trip');
+app.use('/api/trips', tripRoutes);
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

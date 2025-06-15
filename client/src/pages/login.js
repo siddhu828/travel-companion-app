@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -7,24 +8,24 @@ const Login = () => {
     password: '',
   });
 
+  const navigate = useNavigate();
+
   const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const { email, password } = formData;
     try {
-      const res = await axios.post('http://localhost:5050/api/auth/login', formData);
-      alert('Login successful!');
-      console.log('Token:', res.data.token);
-      console.log('User:', res.data.user);
-
-      // Optional: Save token to localStorage
+      const res = await api.post('/auth/login', { email, password });
+      console.log("Login successful!", res.data);
       localStorage.setItem('token', res.data.token);
-
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      navigate('/dashboard');
     } catch (err) {
-      console.error(err.response?.data || err.message);
-      alert('Login failed!');
+      console.error("Login error:", err.response?.data?.msg || err.message);
+      alert(err.response?.data?.msg || "Login failed");
     }
   };
 

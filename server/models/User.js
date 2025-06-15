@@ -18,6 +18,15 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+  age: Number,
+  gender: String,
+  bio: String,
+  interests: [String],
+  profilePicture: String,
+  trips: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Trip' }],
+  likedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  skippedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  blockedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+}, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);
