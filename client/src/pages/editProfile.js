@@ -30,24 +30,29 @@ const EditProfile = () => {
         body: data
       });
       const result = await res.json();
+      console.log("✅ Uploaded to Cloudinary:", result.secure_url);
       setFormData({ ...formData, profilePicture: result.secure_url });
     } catch (err) {
-      console.error('Cloudinary upload failed:', err);
+      console.error('❌ Cloudinary upload failed:', err);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const updated = await api.put('/user/profile', {
-        ...formData,
-        age: parseInt(formData.age), // 🔧 this is the important fix
-        interests: formData.interests.split(',').map((i) => i.trim())
+      const res = await api.put('/user/profile', {
+        userId: formData.userId,
+        name: formData.name,
+        age: parseInt(formData.age),
+        gender: formData.gender,
+        bio: formData.bio,
+        interests: formData.interests.split(',').map((i) => i.trim()),
+        profilePicture: formData.profilePicture
       });
       alert('Profile updated!');
-      console.log(updated.data);
+      console.log('Updated profile:', res.data);
     } catch (err) {
-      console.error(err);
+      console.error('React API Error:', err.response?.data || err.message);
       alert('Update failed');
     }
   };
@@ -61,7 +66,7 @@ const EditProfile = () => {
         <input name="gender" placeholder="Gender" value={formData.gender} onChange={handleChange} /><br />
         <textarea name="bio" placeholder="Bio" onChange={handleChange} value={formData.bio} /><br />
         <input name="interests" placeholder="Interests (comma separated)" value={formData.interests} onChange={handleChange} /><br />
-        
+
         <label>Upload Profile Picture</label>
         <input type="file" onChange={handleCloudinaryUpload} /><br />
         {formData.profilePicture && <img src={formData.profilePicture} alt="Preview" height={100} />}<br />

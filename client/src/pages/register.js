@@ -17,7 +17,8 @@ function Register() {
       alert("User Registered!");
       console.log(res.data);
     } catch (err) {
-      console.error(err.response.data.msg);
+      console.error("Register error:", err.response?.data?.msg || err.message);
+  alert(err.response?.data?.msg || "Registration failed");
     }
   };
 

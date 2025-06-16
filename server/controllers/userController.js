@@ -12,22 +12,30 @@ exports.getProfile = async (req, res) => {
 
 // Update user profile
 exports.updateProfile = async (req, res) => {
-    try {
-      console.log("Received profile update data:", req.body); // 🔍 Log it
-      const { userId, name, age, gender, bio, interests, profilePicture } = req.body;
-      
-      const updated = await User.findByIdAndUpdate(userId, {
-        name, age, gender, bio, interests, profilePicture
-      }, { new: true }).select('-password');
-  
-      res.json(updated);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ msg: 'Error updating profile' });
-    }
-};
-const User = require('../models/User');
+  console.log("🛬 Hit updateProfile route");  //  this should appear
 
+  try {
+    console.log("Received profile update data:", req.body);
+    const { userId, name, age, gender, bio, interests, profilePicture } = req.body;
+    console.log("🔍 Updating user with ID:", userId);
+
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (age) updateData.age = parseInt(age);
+    if (gender) updateData.gender = gender;
+    if (bio) updateData.bio = bio;
+    if (interests) updateData.interests = interests;
+    if (profilePicture) updateData.profilePicture = profilePicture;
+
+    console.log("Final data being updated:", updateData);
+
+    const updated = await User.findByIdAndUpdate(userId, { $set: updateData }, { new: true }).select('-password');
+    res.json(updated);
+  } catch (err) {
+    console.error("Update error:", err);
+    res.status(500).json({ msg: 'Error updating profile' });
+  }
+};
 // Fetch potential matches for a user
 exports.getPotentialMatches = async (req, res) => {
   try {

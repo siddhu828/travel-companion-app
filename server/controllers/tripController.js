@@ -38,3 +38,26 @@ exports.getUserTrips = async (req, res) => {
     res.status(500).json({ msg: 'Error fetching trips' });
   }
 };
+
+// tripController.js
+exports.getPotentialMatchesFromTrip = async (req, res) => {
+  try {
+    const { userId, tripId } = req.params;
+
+    const user = await User.findById(userId);
+    const trip = await Trip.findById(tripId);
+
+    if (!trip || !user) return res.status(404).json({ msg: "Trip or user not found" });
+
+    const matches = await User.find({
+      _id: { $ne: userId },
+      interests: { $in: trip.interests },
+      _id: { $nin: [...user.likedUsers, ...user.skippedUsers, ...user.blockedUsers] }
+    }).select('-password');
+
+    res.json(matches);
+  } catch (err) {
+    console.error("Matching error:", err);
+    res.status(500).json({ msg: 'Error fetching matches' });
+  }
+};
