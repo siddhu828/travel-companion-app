@@ -1,7 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { sendMessage, getMessages } = require('../controllers/messageController');
+const {
+  sendMessage,
+  getMessages,
+  getChatContacts
+} = require('../controllers/messageController');
 
+//order matters uncle
+router.get('/contacts/:userId', getChatContacts);
 router.post('/send', sendMessage);
 router.get('/:userId/:contactId', getMessages);
 

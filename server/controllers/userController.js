@@ -66,15 +66,29 @@ exports.likeUser = async (req, res) => {
     } catch (err) {
       res.status(500).json({ msg: 'Error liking user' });
     }
-  };
+};
   
   // Skip a user
-  exports.skipUser = async (req, res) => {
-    try {
-      const { userId, targetId } = req.body;
-      await User.findByIdAndUpdate(userId, { $addToSet: { skippedUsers: targetId } });
-      res.json({ msg: 'User skipped.' });
-    } catch (err) {
-      res.status(500).json({ msg: 'Error skipping user' });
+exports.skipUser = async (req, res) => {
+  try {
+    const { userId, targetId } = req.body;
+    await User.findByIdAndUpdate(userId, { $addToSet: { skippedUsers: targetId } });
+    res.json({ msg: 'User skipped.' });
+  } catch (err) {
+    res.status(500).json({ msg: 'Error skipping user' });
+  }
+};
+exports.getAllUsers = async (req, res) => {
+  try {
+    const currentUserId = req.query.exclude;
+    if (!currentUserId) {
+      return res.status(400).json({ msg: 'Missing exclude query param (user id)' });
     }
-  };
+
+    const users = await User.find({ _id: { $ne: currentUserId } }).select('-password');
+    res.json(users);
+  } catch (err) {
+    console.error("❌ Error fetching users:", err);
+    res.status(500).json({ msg: 'Error fetching users' });
+  }
+};

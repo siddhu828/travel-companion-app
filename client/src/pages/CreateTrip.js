@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import api from '../services/api';
-
+import { Link } from 'react-router-dom';
 const CreateTrip = () => {
   const user = JSON.parse(localStorage.getItem('user'));
 
@@ -36,6 +36,7 @@ const CreateTrip = () => {
 
   return (
     <div className="container mt-4">
+      <Link to="/dashboard" className="btn btn-link mb-3">← Back to Dashboard</Link>
       <h2>Create Trip</h2>
       <form onSubmit={handleSubmit}>
         <input name="destination" placeholder="Destination" onChange={handleChange} /><br />

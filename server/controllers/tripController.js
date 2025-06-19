@@ -49,13 +49,29 @@ exports.getPotentialMatchesFromTrip = async (req, res) => {
 
     if (!trip || !user) return res.status(404).json({ msg: "Trip or user not found" });
 
-    const matches = await User.find({
+    const potentialUsers = await User.find({
       _id: { $ne: userId },
       interests: { $in: trip.interests },
       _id: { $nin: [...user.likedUsers, ...user.skippedUsers, ...user.blockedUsers] }
     }).select('-password');
 
-    res.json(matches);
+    const filteredMatches = [];
+
+    for (const matchUser of potentialUsers) {
+      const theirTrips = await Trip.find({ user: matchUser._id });
+
+      const hasOverlap = theirTrips.some(t =>
+        t.destination.toLowerCase() === trip.destination.toLowerCase() &&
+        new Date(t.endDate) >= new Date(trip.startDate) &&
+        new Date(t.startDate) <= new Date(trip.endDate)
+      );
+
+      if (hasOverlap) {
+        filteredMatches.push(matchUser);
+      }
+    }
+
+    res.json(filteredMatches);
   } catch (err) {
     console.error("Matching error:", err);
     res.status(500).json({ msg: 'Error fetching matches' });

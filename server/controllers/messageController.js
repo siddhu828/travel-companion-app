@@ -1,5 +1,5 @@
 const Message = require('../models/Message');
-
+const User = require('../models/User'); 
 // Send a message
 exports.sendMessage = async (req, res) => {
   try {
@@ -27,5 +27,28 @@ exports.getMessages = async (req, res) => {
   } catch (err) {
     console.error("❌ Message Fetch Error:", err);
     res.status(500).json({ msg: 'Error fetching messages' });
+  }
+};
+
+// Get unique chat contacts for a user
+exports.getChatContacts = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const messages = await Message.find({
+      $or: [{ senderId: userId }, { receiverId: userId }]
+    });
+
+    const contactIds = new Set();
+    messages.forEach(msg => {
+      if (msg.senderId.toString() !== userId) contactIds.add(msg.senderId.toString());
+      if (msg.receiverId.toString() !== userId) contactIds.add(msg.receiverId.toString());
+    });
+
+    const contacts = await User.find({ _id: { $in: Array.from(contactIds) } }).select('-password');
+    res.json(contacts);
+  } catch (err) {
+    console.error("❌ Chat List Error:", err);
+    res.status(500).json({ msg: 'Error fetching chat contacts' });
   }
 };

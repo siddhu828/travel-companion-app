@@ -18,4 +18,7 @@ router.get('/matches/:userId', getPotentialMatches);
 router.post('/like', likeUser);
 router.post('/skip', skipUser);
 
+const { getAllUsers } = require('../controllers/userController');
+router.get('/all', getAllUsers);
+
 module.exports = router;

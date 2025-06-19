@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-
+import { Link } from 'react-router-dom';
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -21,7 +21,8 @@ const Login = () => {
       const res = await api.post('/auth/login', { email, password });
       console.log("Login successful!", res.data);
       localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
+      const fixedUser = { ...res.data.user, _id: res.data.user.id };
+      localStorage.setItem('user', JSON.stringify(fixedUser));
       navigate('/dashboard');
     } catch (err) {
       console.error("Login error:", err.response?.data?.msg || err.message);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
-
+import { Link } from 'react-router-dom';
 const Match = () => {
   const [matches, setMatches] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -31,6 +31,15 @@ const Match = () => {
     return <div className="container mt-4"><h4>Loading...</h4></div>;
   }
 
+  if (matches.length === 0 || currentIndex >= matches.length) {
+    return (
+      <div className="container mt-4">
+        <Link to="/dashboard" className="btn btn-link mb-3">← Back to Dashboard</Link>
+        <h3>No more matches.</h3>
+      </div>
+    );
+  }
+
   const handleLike = async () => {
     try {
       const targetId = matches[currentIndex]._id;
@@ -52,10 +61,6 @@ const Match = () => {
       console.error('Error skipping user:', err);
     }
   };
-
-  if (matches.length === 0 || currentIndex >= matches.length) {
-    return <div className="container mt-4"><h3>No more matches.</h3></div>;
-  }
 
   const match = matches[currentIndex];
 

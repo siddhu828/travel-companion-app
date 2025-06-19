@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import api from '../services/api';
-
+import { Link } from 'react-router-dom';
 const EditProfile = () => {
   const user = JSON.parse(localStorage.getItem('user'));
   const [formData, setFormData] = useState({
@@ -59,6 +59,7 @@ const EditProfile = () => {
 
   return (
     <div className="container mt-4">
+      <Link to="/dashboard" className="btn btn-link mb-3">← Back to Dashboard</Link>
       <h2>Edit Profile</h2>
       <form onSubmit={handleSubmit}>
         <input name="name" placeholder="Name" value={formData.name} onChange={handleChange} /><br />
