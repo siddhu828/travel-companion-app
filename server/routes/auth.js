@@ -9,7 +9,7 @@ router.post('/register', registerUser);
 // Login route
 router.post('/login', loginUser);
 
-// ✅ GET all users — for testing in Postman
+// GET all users 
 router.get('/users', async (req, res) => {
   try {
     const users = await User.find().select('-password'); // exclude passwords
@@ -20,5 +20,8 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// ✅ Export the router *after* all routes are defined
+const { adminLogin } = require('../controllers/authController');
+router.post('/admin-login', adminLogin);
+
+
 module.exports = router;

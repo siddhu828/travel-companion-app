@@ -6,7 +6,10 @@ const {
   getProfile,
   getPotentialMatches,
   likeUser,
-  skipUser
+  skipUser,
+  getAllUsers,
+  deleteUser,
+  toggleBanUser
 } = require('../controllers/userController');
 
 // Profile Routes
@@ -18,7 +21,8 @@ router.get('/matches/:userId', getPotentialMatches);
 router.post('/like', likeUser);
 router.post('/skip', skipUser);
 
-const { getAllUsers } = require('../controllers/userController');
+// Admin Routes
 router.get('/all', getAllUsers);
-
+router.delete('/:id', deleteUser);
+router.put('/ban/:id', toggleBanUser);
 module.exports = router;

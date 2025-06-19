@@ -81,14 +81,34 @@ exports.skipUser = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
   try {
     const currentUserId = req.query.exclude;
-    if (!currentUserId) {
-      return res.status(400).json({ msg: 'Missing exclude query param (user id)' });
-    }
 
-    const users = await User.find({ _id: { $ne: currentUserId } }).select('-password');
+    const query = currentUserId
+      ? { _id: { $ne: currentUserId } }
+      : {}; // no filter if no exclude param
+
+    const users = await User.find(query).select('-password');
     res.json(users);
   } catch (err) {
     console.error("❌ Error fetching users:", err);
     res.status(500).json({ msg: 'Error fetching users' });
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  await User.findByIdAndDelete(req.params.id);
+  res.json({ msg: 'User deleted' });
+};
+
+exports.toggleBanUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ msg: "User not found" });
+
+    user.isBanned = !user.isBanned;
+    await user.save();
+
+    res.json({ msg: user.isBanned ? "User banned" : "User unbanned" });
+  } catch (err) {
+    res.status(500).json({ msg: 'Error toggling ban status' });
   }
 };

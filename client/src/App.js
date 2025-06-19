@@ -12,7 +12,9 @@ import Explore from './pages/Explore';
 import UserTrips from './pages/UserTrips';
 import TripDetails from './pages/tripDetails';
 import Inbox from './pages/Inbox';
-import UserProfile from './pages/UserProfile';
+import UserProfile from './pages/UserProfile'
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
 
 const ChatWrapper = () => {
   const { contactId } = useParams();
@@ -37,6 +39,8 @@ function App() {
           <Route path="/trips/:userId" element={<PrivateRoute><TripDetails /></PrivateRoute>} />
           <Route path="/inbox" element={<PrivateRoute><Inbox /></PrivateRoute>} />
           <Route path="/user/:userId" element={<UserProfile />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/admin" element={<PrivateRoute isAdmin={true}><AdminDashboard /></PrivateRoute>} />
         </Routes>
       </div>
     </Router>

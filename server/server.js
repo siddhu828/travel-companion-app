@@ -26,6 +26,9 @@ app.use('/api/user', userRoutes);
 const tripRoutes = require('./routes/trip');
 app.use('/api/trips', tripRoutes);
 
+const adminRoutes = require('./routes/adminR');
+app.use('/api/admin', adminRoutes);
+
 const http = require('http');
 const { Server } = require('socket.io');
 

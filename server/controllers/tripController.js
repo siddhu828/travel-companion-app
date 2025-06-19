@@ -77,3 +77,13 @@ exports.getPotentialMatchesFromTrip = async (req, res) => {
     res.status(500).json({ msg: 'Error fetching matches' });
   }
 };
+
+exports.getAllTrips = async (req, res) => {
+  const trips = await Trip.find().populate('user');
+  res.json(trips);
+};
+
+exports.deleteTrip = async (req, res) => {
+  await Trip.findByIdAndDelete(req.params.id);
+  res.json({ msg: 'Trip deleted' });
+};

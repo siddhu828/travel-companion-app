@@ -36,6 +36,11 @@ exports.loginUser = async (req, res) => {
     let user = await User.findOne({ email });
     if (!user) return res.status(400).json({ msg: 'Invalid credentials' });
 
+    // 🔴 Banned check
+    if (user.isBanned) {
+      return res.status(403).json({ msg: 'You are banned by the admin.' });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ msg: 'Invalid credentials' });
 
@@ -44,6 +49,32 @@ exports.loginUser = async (req, res) => {
     });
 
     res.json({ token, user: { id: user._id, name: user.name, email } });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+};
+exports.adminLogin = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const admin = await User.findOne({ email });
+
+    if (!admin || !admin.isAdmin) {
+      return res.status(403).json({ msg: 'Not authorized' });
+    }
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) return res.status(400).json({ msg: 'Invalid credentials' });
+
+    const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+    res.json({
+      token,
+      isAdmin: true,
+      name: admin.name,
+      email: admin.email,
+      id: admin._id
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');

@@ -27,6 +27,7 @@ const UserSchema = new mongoose.Schema({
   likedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   skippedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   blockedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  isBanned:{type : Boolean, default: false}
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);
