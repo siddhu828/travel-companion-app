@@ -48,7 +48,15 @@ exports.loginUser = async (req, res) => {
       expiresIn: '1d',
     });
 
-    res.json({ token, user: { id: user._id, name: user.name, email } });
+    // 👇 Now return user with _id and not just id
+    res.json({
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
+import { Typography, Container } from '@mui/material'; // ✅ MUI components
 import Register from './pages/register';
 import Login from './pages/login';
 import Dashboard from './pages/dashboard';
@@ -20,11 +21,19 @@ const ChatWrapper = () => {
   const { contactId } = useParams();
   return <Chat contactId={contactId} />;
 };
+
 function App() {
   return (
     <Router>
-      <div className="container mt-4">
-        <h2 className="mb-4 text-center">Travel Companion App</h2>
+      <Container maxWidth="md">
+        <Typography
+          variant="h3"
+          align="center"
+          sx={{ mt: 4, mb: 4, fontWeight: 'bold' }}
+        >
+          Travel Companion App
+        </Typography>
+
         <Routes>
           <Route path="/" element={<Register />} />
           <Route path="/register" element={<Register />} />
@@ -42,7 +51,7 @@ function App() {
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/admin" element={<PrivateRoute isAdmin={true}><AdminDashboard /></PrivateRoute>} />
         </Routes>
-      </div>
+      </Container>
     </Router>
   );
 }

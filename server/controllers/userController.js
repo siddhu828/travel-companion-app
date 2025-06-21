@@ -39,21 +39,24 @@ exports.updateProfile = async (req, res) => {
 // Fetch potential matches for a user
 exports.getPotentialMatches = async (req, res) => {
   try {
-    const currentUserId = req.params.userId;
-    const currentUser = await User.findById(currentUserId);
+    const userId = req.params.userId;
+    const currentUser = await User.findById(userId);
 
     if (!currentUser) return res.status(404).json({ msg: 'User not found' });
 
+    // Match logic
     const matches = await User.find({
-      _id: { $ne: currentUserId }, // Not the user themself
-      interests: { $in: currentUser.interests }, // Shared interests
-      _id: { $nin: [...currentUser.likedUsers, ...currentUser.skippedUsers, ...currentUser.blockedUsers] }
+      _id: { $ne: userId }, // ❌ Exclude self
+      'trips.destination': { $in: currentUser.trips.map(t => t.destination) }, // ✅ Common destination
+      'trips.startDate': { $lte: new Date(currentUser.trips[0].endDate) },
+      'trips.endDate': { $gte: new Date(currentUser.trips[0].startDate) },
+      interests: { $in: currentUser.interests }, // ✅ Shared interest
     }).select('-password');
 
     res.json(matches);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: 'Error finding matches' });
+    console.error('❌ Match error:', err.message);
+    res.status(500).json({ msg: 'Server error while matching' });
   }
 };
 
