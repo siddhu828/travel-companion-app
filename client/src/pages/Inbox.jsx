@@ -11,7 +11,7 @@ import {
   Stack,
   Divider
 } from '@mui/material';
-
+ 
 const Inbox = () => {
   const storedUser = JSON.parse(localStorage.getItem('user'));
   const currentUser = storedUser?.user || storedUser; // support both structures

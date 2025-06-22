@@ -18,7 +18,7 @@ const Match = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Load user from localStorage only once
+  // Load user from localStorage only once
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('user'));
     const user = stored?.user;
