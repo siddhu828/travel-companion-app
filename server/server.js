@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'https://travel-companion-app-ten.vercel.app',
   credentials: true
 }));
 app.use(express.json());
