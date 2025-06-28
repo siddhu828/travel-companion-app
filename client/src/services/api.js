@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5050/api',
+  baseURL: 'https://travel-companion-app-1nns.onrender.com',
 });
 
 export default api;
