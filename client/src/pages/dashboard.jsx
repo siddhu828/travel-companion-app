@@ -1,33 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
-import {
-  Typography,
-  Grid,
-  Button,
-  Paper,
-  Stack,
-  Divider
-} from '@mui/material';
+import api from '../services/api';
+import './dashboard.css';
 
 const formatDate = (dateStr) => {
   const date = new Date(dateStr);
   return date.toLocaleDateString('en-GB');
 };
 
+const toSentenceCase = (str) => {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const stored = JSON.parse(localStorage.getItem('user'));
   const user = stored?.user || stored;
+  const userId = user?._id || user?.id;
   const [trips, setTrips] = useState([]);
-
-  const userId = user?._id || user?.id; // Fallback for id or _id
-  console.log("👉 LocalStorage User:", user); // Debug log
-  console.log("✅ User ID used for fetching trips:", userId);
+  const [bgOrange, setBgOrange] = useState(false);
 
   useEffect(() => {
-    if (!userId) return; // ✅ Prevent call if ID not available
-
+    if (!userId) return;
     const fetchTrips = async () => {
       try {
         const res = await api.get(`/trips/${userId}`);
@@ -36,73 +31,60 @@ const Dashboard = () => {
         console.error('Error fetching trips:', err);
       }
     };
-
     fetchTrips();
-  }, [userId]); // ✅ Correct dependency
+  }, [userId]);
 
   const handleLogout = () => {
     localStorage.clear();
-    window.location.href = '/login';
+    navigate('/login');
+  };
+
+  const handleProfile = () => {
+    setBgOrange(true);
+    setTimeout(() => {
+      navigate(`/user/${userId}`);
+    }, 150);
   };
 
   return (
-    <Grid container justifyContent="center" sx={{ mt: 6 }}>
-      <Grid item xs={11} sm={10} md={8}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h4">
-            Welcome, {user?.name || 'User'}!
-          </Typography>
-          <Button variant="contained" color="error" onClick={handleLogout}>
-            Logout
-          </Button>
-        </Stack>
+    <div className={`dashboard-outer-border ${bgOrange ? 'orange-bg' : ''}`}>
+      <div className="dashboard-navbar">
+        <div className="welcome-user" onClick={() => navigate('/dashboard')}>
+          <img src="/uuss.svg" alt="User Icon" className="user-icon" />
+          <span>Welcome {user?.name || 'User'}</span>
+        </div>
+        <div className="navbar-buttons">
+          <button className="profile-btn" onClick={handleProfile}>Profile</button>
+          <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        </div>
+      </div>
 
-        <Stack direction="row" spacing={2} mb={4}>
-          <Button variant="contained" onClick={() => navigate('/create-trip')}>
-            Create Trip
-          </Button>
-          <Button variant="outlined" onClick={() => navigate('/explore')}>
-            Explore
-          </Button>
-          <Button variant="outlined" color="success" onClick={() => navigate('/match')}>
-            Find Matches
-          </Button>
-          <Button variant="outlined" color="secondary" onClick={() => navigate('/inbox')}>
-            Inbox
-          </Button>
-        </Stack>
+      {/* CENTERED BUTTONS */}
+      <div className="dashboard-actions">
+        <button onClick={() => navigate('/create-trip')}>CREATE TRIP</button>
+        <button onClick={() => navigate('/explore')}>EXPLORE</button>
+        <button onClick={() => navigate('/match')}>FIND MATCHES</button>
+        <button onClick={() => navigate('/inbox')}>INBOX</button>
+        <button onClick={() => navigate('/edit-profile')}>EDIT PROFILE</button>
+        <button onClick={() => navigate('/trips/' + userId)}>TRIP DETAILS</button>
+      </div>
 
-        <Typography variant="h5" gutterBottom>
-          Your Trips
-        </Typography>
-
+      <h2 className="your-trips-title">Your Trips:</h2>
+      <div className="trip-cards">
         {trips.length === 0 ? (
-          <Typography>No trips created yet.</Typography>
+          <p>No trips created yet.</p>
         ) : (
-          <Stack spacing={2}>
-            {trips.map((trip) => (
-              <Paper key={trip._id} elevation={2} sx={{ padding: 2 }}>
-                <Typography variant="h6">{trip.destination}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {formatDate(trip.startDate)} to {formatDate(trip.endDate)}
-                </Typography>
-                {trip.travelType && (
-                  <Typography variant="body2" fontStyle="italic">
-                    {trip.travelType}
-                  </Typography>
-                )}
-                {trip.description && (
-                  <>
-                    <Divider sx={{ my: 1 }} />
-                    <Typography>{trip.description}</Typography>
-                  </>
-                )}
-              </Paper>
-            ))}
-          </Stack>
+          trips.map((trip) => (
+            <div className="trip-card" key={trip._id}>
+              <p><strong>Destination:</strong> <span className="orange">{toSentenceCase(trip.destination)}</span></p>
+              <p><strong>Dates:</strong> <span className="orange">{formatDate(trip.startDate)} to {formatDate(trip.endDate)}</span></p>
+              <p><strong>Travel Type:</strong> <span className="orange">{toSentenceCase(trip.travelType)}</span></p>
+              <p><strong>Description:</strong> <span className="orange">{toSentenceCase(trip.description)}</span></p>
+            </div>
+          ))
         )}
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   );
 };
 

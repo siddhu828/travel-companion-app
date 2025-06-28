@@ -1,39 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
 import { io } from 'socket.io-client';
-import {
-  Box,
-  Button,
-  Container,
-  Typography,
-  TextField,
-  Stack,
-  Paper,
-} from '@mui/material';
+import './chat.css'; // you'll create styles here
 
 const socket = io("http://localhost:5050");
 
-const Chat = ({ contactId }) => {
+const Chat = () => {
+  const { contactId } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const userRaw = JSON.parse(localStorage.getItem('user'));
   const currentUser = {
     ...userRaw,
     _id: userRaw?._id || userRaw?.user?._id || userRaw?.user?.id || userRaw?.id,
   };
 
-  const isValidUser = contactId && currentUser && currentUser._id;
-
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    if (!contactId || !currentUser || !currentUser._id) {
-      console.error("❌ Missing user info:", { contactId, currentUser });
-    }
-  }, [contactId, currentUser]);
+    if (!contactId || !currentUser._id) return;
 
-  useEffect(() => {
     const fetchChat = async () => {
       try {
         const res = await api.get(`/messages/${currentUser._id}/${contactId}`);
@@ -43,7 +33,7 @@ const Chat = ({ contactId }) => {
       }
     };
 
-    if (contactId) fetchChat();
+    fetchChat();
 
     socket.on('receive_message', (data) => {
       const isMatch =
@@ -55,9 +45,7 @@ const Chat = ({ contactId }) => {
       }
     });
 
-    return () => {
-      socket.off('receive_message');
-    };
+    return () => socket.off('receive_message');
   }, [contactId, currentUser._id]);
 
   useEffect(() => {
@@ -83,71 +71,74 @@ const Chat = ({ contactId }) => {
     }
   };
 
-  if (!isValidUser) {
-    return (
-      <Container sx={{ mt: 4 }}>
-        <Typography color="error">❌ Missing user info — check console.</Typography>
-      </Container>
-    );
-  }
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
+  };
+
+  const handleProfile = () => {
+    navigate(`/user/${currentUser?._id}`);
+  };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
-      <Button component={Link} to="/dashboard" variant="outlined" sx={{ mb: 2 }}>
-        ← Back to Dashboard
-      </Button>
+    <div className="dashboard-outer-border">
+      {/* Navbar */}
+      <div className="dashboard-navbar">
+        <div className="welcome-user" onClick={() => navigate('/dashboard')}>
+          <img src="/uuss.svg" alt="User Icon" className="user-icon" />
+          <span>Welcome {currentUser?.name}</span>
+        </div>
+        <div className="navbar-buttons">
+          <button className="profile-btn" onClick={handleProfile}>Profile</button>
+          <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        </div>
+      </div>
 
-      <Typography variant="h5" gutterBottom>
-        Chat
-      </Typography>
+      {/* Dashboard Action Buttons */}
+      <div className="dashboard-actions">
+        <button onClick={() => navigate('/create-trip')}>CREATE TRIP</button>
+        <button onClick={() => navigate('/explore')}>EXPLORE</button>
+        <button onClick={() => navigate('/match')}>FIND MATCHES</button>
+        <button onClick={() => navigate('/inbox')}>INBOX</button>
+        <button onClick={() => navigate('/edit-profile')}>EDIT PROFILE</button>
+        <button onClick={() => navigate('/trips/' + currentUser._id)}>TRIP DETAILS</button>
+      </div>
 
-      <Paper
-        elevation={3}
-        sx={{
-          height: 320,
-          overflowY: 'auto',
-          p: 2,
-          background: '#f5f5f5',
-          mb: 2,
-          borderRadius: 2,
-        }}
-      >
-        {messages.map((msg, index) => (
-          <Box
-            key={index}
-            display="flex"
-            justifyContent={msg.senderId === currentUser._id ? 'flex-end' : 'flex-start'}
-            mb={1}
-          >
-            <Box
-              px={2}
-              py={1}
-              borderRadius={2}
-              maxWidth="75%"
-              bgcolor={msg.senderId === currentUser._id ? 'primary.main' : 'grey.300'}
-              color={msg.senderId === currentUser._id ? 'white' : 'black'}
+      {/* Go Back */}
+      <div className="go-back-container">
+        <button className="go-back-btn" onClick={() => navigate("/inbox")}>
+          ← Go Back
+        </button>
+      </div>
+
+      {/* Chat Box */}
+      <h2 className="chat-heading">Chat :</h2>
+
+      <div className="chat-window">
+        <div className="chat-messages">
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`chat-bubble ${msg.senderId === currentUser._id ? 'sent' : 'received'}`}
             >
               {msg.message}
-            </Box>
-          </Box>
-        ))}
-        <div ref={bottomRef} />
-      </Paper>
+            </div>
+          ))}
+          <div ref={bottomRef} />
+        </div>
 
-      <Stack direction="row" spacing={2}>
-        <TextField
-          fullWidth
-          size="small"
-          placeholder="Type your message..."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-        />
-        <Button variant="contained" color="success" onClick={sendMessage}>
-          Send
-        </Button>
-      </Stack>
-    </Container>
+        <div className="chat-input-area">
+          <input
+            type="text"
+            placeholder="Type your message..."
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+          />
+          <button onClick={sendMessage}>Send</button>
+        </div>
+      </div>
+    </div>
   );
 };
 

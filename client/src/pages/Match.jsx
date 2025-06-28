@@ -1,126 +1,124 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
-import { Link, useNavigate } from 'react-router-dom';
-import {
-  Typography,
-  Button,
-  Card,
-  CardContent,
-  Avatar,
-  Box,
-  Stack
-} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import './match.css';
+
+const toSentenceCase = (str) => {
+  if (!str) return '';
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
 
 const Match = () => {
-  const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const [matches, setMatches] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // Load user from localStorage only once
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('user'));
-    const user = stored?.user;
-    if (!user?._id) {
-      console.warn("❌ User not found, redirecting...");
-      navigate('/login');
-    } else {
-      setCurrentUser(user);
-    }
-  }, [navigate]);
+    const id = stored?.user?._id || stored?.user?.id;
+    if (id) setCurrentUserId(id);
+  }, []);
 
   useEffect(() => {
-    if (!currentUser?._id) return;
+    if (!currentUserId) return;
 
     const fetchMatches = async () => {
       try {
-        const res = await api.get(`/user/matches/${currentUser._id}`);
+        const res = await api.get(`/user/matches/${currentUserId}`);
         setMatches(res.data);
       } catch (err) {
         console.error('❌ Error fetching matches:', err);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchMatches();
-  }, [currentUser]);
+  }, [currentUserId]);
 
-  const handleLike = async () => {
+  const handleLike = async (targetId) => {
     try {
-      const targetId = matches[currentIndex]._id;
       await api.post('/user/like', {
-        userId: currentUser._id,
+        userId: currentUserId,
         targetId,
       });
-      setCurrentIndex((prev) => prev + 1);
+      setMatches(matches.filter((m) => m._id !== targetId));
     } catch (err) {
       console.error('❌ Error liking user:', err);
     }
   };
 
-  const handleSkip = async () => {
+  const handleSkip = async (targetId) => {
     try {
-      const targetId = matches[currentIndex]._id;
       await api.post('/user/skip', {
-        userId: currentUser._id,
+        userId: currentUserId,
         targetId,
       });
-      setCurrentIndex((prev) => prev + 1);
+      setMatches(matches.filter((m) => m._id !== targetId));
     } catch (err) {
       console.error('❌ Error skipping user:', err);
     }
   };
 
-  if (loading) return <Typography m={4}>Loading...</Typography>;
-
-  if (!currentUser) return null;
-
-  if (matches.length === 0 || currentIndex >= matches.length) {
-    return (
-      <Box textAlign="center" mt={4}>
-        <Button component={Link} to="/dashboard" variant="outlined" sx={{ mb: 2 }}>
-          ← Back to Dashboard
-        </Button>
-        <Typography variant="h6">No more matches.</Typography>
-      </Box>
-    );
-  }
-
-  const match = matches[currentIndex];
+  const stored = JSON.parse(localStorage.getItem('user'));
+  const user = stored?.user || stored;
 
   return (
-    <Box mt={4} display="flex" flexDirection="column" alignItems="center">
-      <Button component={Link} to="/dashboard" variant="outlined" sx={{ mb: 2 }}>
-        ← Back to Dashboard
-      </Button>
+    <div className="match-outer-border">
+      <div className="match-navbar">
+        <div className="welcome-user" onClick={() => navigate('/dashboard')}>
+          <img src="/uuss.svg" alt="User Icon" className="user-icon" />
+          <span>Welcome {user?.name || 'User'}</span>
+        </div>
+        <div className="navbar-buttons">
+          <button className="profile-btn" onClick={() => navigate(`/user/${currentUserId}`)}>Profile</button>
+          <button className="logout-btn" onClick={() => { localStorage.clear(); navigate('/login'); }}>Logout</button>
+        </div>
+      </div>
 
-      <Typography variant="h5" gutterBottom>
-        Potential Match
-      </Typography>
+      <div className="dashboard-actions">
+        <button onClick={() => navigate('/create-trip')}>CREATE TRIP</button>
+        <button onClick={() => navigate('/explore')}>EXPLORE</button>
+        <button>FIND MATCHES</button>
+        <button onClick={() => navigate('/inbox')}>INBOX</button>
+        <button onClick={() => navigate('/edit-profile')}>EDIT PROFILE</button>
+        <button onClick={() => navigate('/trips/' + currentUserId)}>TRIP DETAILS</button>
+      </div>
 
-      <Card sx={{ width: 300, textAlign: 'center', p: 2 }}>
-        <CardContent>
-          <Avatar
-            sx={{ width: 60, height: 60, mx: 'auto', mb: 1 }}
-            src={match.profilePicture}
-          >
-            {match.name?.charAt(0).toUpperCase()}
-          </Avatar>
+      <div className="go-back" onClick={() => navigate('/dashboard')}>← Go Back</div>
+      <h2 className="match-title">Your Potential Matches</h2>
 
-          <Typography variant="h6">{match.name}</Typography>
-          <Typography variant="body2" color="text.secondary">{match.bio || "No bio"}</Typography>
-          <Typography><strong>Gender:</strong> {match.gender || "N/A"}</Typography>
-          <Typography><strong>Interests:</strong> {match.interests?.join(", ") || "N/A"}</Typography>
-        </CardContent>
+      {matches.length === 0 ? (
+        <div style={{ textAlign: 'center', marginTop: '40px' }}>
+          <h3>No more matches</h3>
+        </div>
+      ) : (
+        <div className="user-grid">
+          {matches.map((match) => (
+            <div key={match._id} className="user-card">
+              <div className="avatar-circle">
+                {match.profilePicture ? (
+                  <img src={match.profilePicture} alt={match.name} className="profile-img" />
+                ) : (
+                  match.name?.charAt(0).toUpperCase()
+                )}
+              </div>
+              <h3>{toSentenceCase(match.name)}</h3>
+              <p>{match.bio || 'No bio yet'}</p>
+              <p><strong>Gender:</strong> {match.gender || 'N/A'}</p>
+              <p><strong>Age:</strong> {match.age || 'N/A'}</p>
 
-        <Stack direction="row" spacing={2} justifyContent="center" mt={2} mb={1}>
-          <Button variant="contained" color="success" onClick={handleLike}>❤️ Like</Button>
-          <Button variant="contained" color="error" onClick={handleSkip}>❌ Skip</Button>
-        </Stack>
-      </Card>
-    </Box>
+              <div className="card-buttons">
+                <button onClick={() => handleLike(match._id)}>Like ❤️</button>
+                <button onClick={() => handleSkip(match._id)}>Skip ❌</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 

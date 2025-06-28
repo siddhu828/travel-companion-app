@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kollektif&display=swap');
+
+
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+.auth-container {
+  min-height: 100vh;
+  width: calc(100vw - 40px);
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+.auth-outer-border {
+  border: 4px solid black;
+  width: 100%;
+  max-width: 1600px;
+  height: 95vh;
+  padding: 40px 30px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.auth-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: 24px;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-bottom: 0;
+  margin-top: -27px; 
+}
+
+.logo-img {
+  width: 40px;
+}
+
+.auth-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  position: relative;
+  padding-top: 40px;
+  padding-bottom: 60px;
+}
+
+.auth-form-box {
+  border: 3px solid black;
+  background-color: white;
+  padding: 30px;
+  max-width: 400px;
+  width: 100%;
+  margin: auto;
+  text-align: center;
+}
+
+.auth-title {
+  font-family: 'Dela Gothic One', sans-serif;
+  margin-bottom: 20px;
+  font-size: 28px;
+}
+
+.auth-form-box input {
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 15px;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  font-size: 16px;
+  font-family: 'Kollektif', sans-serif;
+}
+
+.submit-btn {
+  width: 100%;
+  background-color: #C86139;
+  color: whitewhite;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+}
+
+.auth-footer-link {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.auth-doodle {
+  height: 580px;
+  position: absolute;
+  bottom: -50px;
+  width: auto;
+  z-index: 1;
+}
+
+.auth-doodle.left {
+  left: -15px;
+}
+
+.auth-doodle.right {
+  right: -15px;
+}
+
+.auth-footer {
+  text-align: center;
+  font-size: 14px;
+  color: #C86139;
+  margin-top: 10px;
+  font-family: 'kollektif', sans-serif;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .auth-doodle {
+    display: none;
+  }
+
+  .auth-form-box {
+    margin: auto;
+  }
+
+  .auth-main {
+    justify-content: center;
+  }
+}

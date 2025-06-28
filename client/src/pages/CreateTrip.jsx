@@ -1,20 +1,14 @@
 import React, { useState } from 'react';
-import {
-  Container,
-  TextField,
-  Button,
-  Typography,
-  Box,
-  Stack
-} from '@mui/material';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import './createTrip.css';
 
 const CreateTrip = () => {
+  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
 
   const [tripData, setTripData] = useState({
-    userId: user?.user?._id || user?.user?.id,  // safer fallback
+    userId: user?.user?._id || user?.user?.id,
     destination: '',
     startDate: '',
     endDate: '',
@@ -34,9 +28,8 @@ const CreateTrip = () => {
         ...tripData,
         interests: tripData.interests.split(',').map((i) => i.trim())
       };
-      const res = await api.post('/trips', payload);
+      await api.post('/trips', payload);
       alert('🎉 Trip created successfully!');
-      console.log(res.data);
     } catch (err) {
       console.error(err);
       alert('❌ Error creating trip');
@@ -44,73 +37,44 @@ const CreateTrip = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 6 }}>
-      <Button component={Link} to="/dashboard" variant="outlined" sx={{ mb: 2 }}>
-        ← Back to Dashboard
-      </Button>
-      <Typography variant="h4" gutterBottom>
-        Create New Trip
-      </Typography>
+    <div className="create-trip-outer-border">
+      <div className="create-trip-navbar">
+        <div className="welcome-user" onClick={() => navigate('/dashboard')}>
+          <img src="/uuss.svg" alt="User Icon" className="user-icon" />
+          <span>Welcome {user?.user?.name || 'User'}</span>
+        </div>
+        <div className="navbar-buttons">
+          <button className="profile-btn" onClick={() => navigate(`/user/${tripData.userId}`)}>Profile</button>
+          <button className="logout-btn" onClick={() => { localStorage.clear(); navigate('/login'); }}>Logout</button>
+        </div>
+      </div>
 
-      <Box component="form" onSubmit={handleSubmit} noValidate>
-        <Stack spacing={2}>
-          <TextField
-            name="destination"
-            label="Destination"
-            value={tripData.destination}
-            onChange={handleChange}
-            required
-            fullWidth
-          />
-          <TextField
-            name="startDate"
-            label="Start Date"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            value={tripData.startDate}
-            onChange={handleChange}
-            required
-            fullWidth
-          />
-          <TextField
-            name="endDate"
-            label="End Date"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            value={tripData.endDate}
-            onChange={handleChange}
-            required
-            fullWidth
-          />
-          <TextField
-            name="interests"
-            label="Interests (comma separated)"
-            value={tripData.interests}
-            onChange={handleChange}
-            fullWidth
-          />
-          <TextField
-            name="travelType"
-            label="Travel Type (e.g. Adventure, Leisure)"
-            value={tripData.travelType}
-            onChange={handleChange}
-            fullWidth
-          />
-          <TextField
-            name="description"
-            label="Trip Description"
-            value={tripData.description}
-            onChange={handleChange}
-            multiline
-            rows={3}
-            fullWidth
-          />
-          <Button type="submit" variant="contained" color="primary">
-            Save Trip
-          </Button>
-        </Stack>
-      </Box>
-    </Container>
+      <div className="dashboard-actions">
+        <button className='btn-imp'>CREATE TRIP</button>
+        <button onClick={() => navigate('/explore')}>EXPLORE</button>
+        <button onClick={() => navigate('/match')}>FIND MATCHES</button>
+        <button onClick={() => navigate('/inbox')}>INBOX</button>
+        <button onClick={() => navigate('/edit-profile')}>EDIT PROFILE</button>
+        <button onClick={() => navigate('/trips/' + tripData.userId)}>TRIP DETAILS</button>
+      </div>
+
+      <div className="go-back" onClick={() => navigate('/dashboard')}>← Go Back</div>
+      <h2 className="trip-title">Create New Trip</h2>
+
+      <div className="trip-form-wrapper">
+        <img src="/1p.svg" className="trip-doodle left" alt="left" />
+        <form className="trip-form" onSubmit={handleSubmit}>
+          <input type="text" name="destination" placeholder="Destination*" required onChange={handleChange} />
+          <input type="date" name="startDate" required onChange={handleChange} />
+          <input type="date" name="endDate" required onChange={handleChange} />
+          <input type="text" name="interests" placeholder="Interests*" onChange={handleChange} />
+          <input type="text" name="travelType" placeholder="Travel Type" onChange={handleChange} />
+          <textarea name="description" placeholder="Trip Description" rows={3} onChange={handleChange}></textarea>
+          <button type="submit" className="save-btn">Save</button>
+        </form>
+        <img src="/2p.svg" className="trip-doodle right" alt="right" />
+      </div>
+    </div>
   );
 };
 

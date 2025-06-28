@@ -1,18 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import api from '../services/api';
-import {
-  Box,
-  Typography,
-  CircularProgress,
-  Card,
-  CardContent,
-  Button,
-  Chip,
-  Divider,
-  Stack
-} from '@mui/material';
- 
+import './tripdetails.css';
+
 const toSentenceCase = (str) => {
   if (!str) return '';
   return str
@@ -29,10 +19,14 @@ const formatDate = (dateStr) => {
 
 const TripDetails = () => {
   const { userId } = useParams();
+  const navigate = useNavigate();
+  const stored = JSON.parse(localStorage.getItem('user'));
+  const user = stored?.user || stored;
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!userId) return;
     const fetchTrips = async () => {
       try {
         const res = await api.get(`/trips/${userId}`);
@@ -43,85 +37,81 @@ const TripDetails = () => {
         setLoading(false);
       }
     };
-
-    if (userId) fetchTrips();
+    fetchTrips();
   }, [userId]);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
+  };
+
+  const handleProfile = () => {
+    navigate(`/user/${userId}`);
+  };
 
   if (loading) {
     return (
-      <Box textAlign="center" mt={5}>
-        <CircularProgress />
-        <Typography mt={2}>Loading trips...</Typography>
-      </Box>
+      <div className="tripdetails-wrapper">
+        <p className="loading-text">Loading trips...</p>
+      </div>
     );
   }
 
   if (trips.length === 0) {
     return (
-      <Box textAlign="center" mt={5}>
-        <Typography>No trips found.</Typography>
-      </Box>
+      <div className="tripdetails-wrapper">
+        <p className="loading-text">No trips found.</p>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Box mb={2}>
-        <Button component={Link} to="/dashboard" variant="outlined">
-          ← Back to Dashboard
-        </Button>
-      </Box>
+    <div className="tripdetails-wrapper">
+      <div className="dashboard-navbar">
+        <div className="welcome-user" onClick={() => navigate('/dashboard')}>
+          <img src="/uuss.svg" alt="User Icon" className="user-icon" />
+          <span>Welcome {user?.name || 'User'}</span>
+        </div>
+        <div className="navbar-buttons">
+          <button className="profile-btn" onClick={handleProfile}>Profile</button>
+          <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        </div>
+      </div>
 
-      <Typography variant="h5" gutterBottom>
-        Trip Details
-      </Typography>
+      <div className="dashboard-actions">
+        <button onClick={() => navigate('/create-trip')}>CREATE TRIP</button>
+        <button onClick={() => navigate('/explore')}>EXPLORE</button>
+        <button onClick={() => navigate('/match')}>FIND MATCHES</button>
+        <button onClick={() => navigate('/inbox')}>INBOX</button>
+        <button onClick={() => navigate('/edit-profile')}>EDIT PROFILE</button>
+        <button onClick={() => navigate('/trips/' + userId)}>TRIP DETAILS</button>
+      </div>
+      <div className="go-back" onClick={() => navigate('/dashboard')}>← Go Back</div>
+      <h2 className="tripdetails-title">Trip Details</h2>
 
-      <Stack spacing={3}>
+      <div className="tripdetails-cards">
         {trips.map((trip) => (
-          <Card key={trip._id} elevation={2}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                {toSentenceCase(trip.destination)}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {formatDate(trip.startDate)} → {formatDate(trip.endDate)}
-              </Typography>
-
-              {trip.travelType && (
-                <Chip
-                  label={trip.travelType}
-                  color="primary"
-                  size="small"
-                  sx={{ mt: 1 }}
-                />
-              )}
-
-              <Divider sx={{ my: 2 }} />
-
-              {trip.description && (
-                <Typography sx={{ mb: 1 }}>
-                  <strong>Description:</strong> {trip.description}
-                </Typography>
-              )}
-
-              {trip.interests?.length > 0 && (
-                <Typography variant="body2">
-                  <strong>Interests:</strong>{' '}
-                  {trip.interests.map((i, idx) => (
-                    <Chip
-                      key={idx}
-                      label={i}
-                      size="small"
-                      sx={{ mr: 0.5, mt: 0.5 }}
-                    />
-                  ))}
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
+          <div className="tripdetails-card" key={trip._id}>
+            <p><strong>Destination:</strong> <span className="orange">{toSentenceCase(trip.destination)}</span></p>
+            <p><strong>Dates:</strong> <span className="orange">{formatDate(trip.startDate)} to {formatDate(trip.endDate)}</span></p>
+            {trip.travelType && (
+              <p><strong>Travel Type:</strong> <span className="orange">{toSentenceCase(trip.travelType)}</span></p>
+            )}
+            {trip.description && (
+              <p><strong>Description:</strong> <span className="orange">{toSentenceCase(trip.description)}</span></p>
+            )}
+            {trip.interests?.length > 0 && (
+              <p>
+                <strong>Interests:</strong>{' '}
+                {trip.interests.map((interest, idx) => (
+                  <span key={idx} className="interest-chip">{toSentenceCase(interest)}</span>
+                ))}
+              </p>
+            )}
+          </div>
         ))}
-      </Stack>
-    </Box>
+      </div>
+    </div>
   );
 };
 

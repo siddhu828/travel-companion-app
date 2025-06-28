@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kollektif&display=swap');
+
+.editprofile-outer-border {
+  border: 4px solid black;
+  margin: 0 auto;
+  padding: 0;
+  background-color: white;
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  max-width: 1440px;
+}
+
+.editprofile-navbar {
+  width: 100%;
+  border-bottom: 4px solid black;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: 22px;
+}
+
+.welcome-user {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 12px;
+}
+
+.user-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.navbar-buttons button {
+  margin-left: 10px;
+  padding: 6px 14px;
+  font-weight: bold;
+  font-size: 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.profile-btn {
+  background-color: transparent;
+  color: black;
+  border: 2px solid black;
+}
+
+.logout-btn {
+  background-color: black;
+  color: white;
+  border: none;
+}
+
+/* Centered buttons */
+.dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin: 30px 0;
+}
+
+.dashboard-actions button {
+  background-color: #C86139;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-weight: bold;
+  border-radius: 6px;
+  font-size: 16px;
+  font-family: 'Kollektif', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dashboard-actions button:active {
+  background-color: black;
+  color: white;
+}
+
+.editprofile-title {
+  font-size: 24px;
+  font-family: 'Dela Gothic One', sans-serif;
+  margin-left: 40px;
+  margin-bottom: 20px;
+}
+
+.editprofile-form {
+  font-family: 'Kollektif', sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  font-size: 16px;
+  padding: 0 40px 40px;
+}
+
+.editprofile-form input,
+.editprofile-form textarea {
+  padding: 10px;
+  border: 2px solid black;
+  border-radius: 6px;
+  font-family: 'Kollektif', sans-serif;
+  font-size: 16px;
+}
+
+.editprofile-form button {
+  background-color: #C86139;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-weight: bold;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.preview-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-top: 5px;
+}

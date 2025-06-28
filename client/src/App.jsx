@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
-import { Typography, Container } from '@mui/material'; // ✅ MUI components
+import { Typography, Container } from '@mui/material'; // MUI components
 import Register from './pages/register';
 import Login from './pages/login';
 import Dashboard from './pages/dashboard';
@@ -21,21 +21,18 @@ const ChatWrapper = () => {
   const { contactId } = useParams();
   return <Chat contactId={contactId} />;
 };
-
+const RedirectToFramer = () => {
+  useEffect(() => {
+    window.location.replace('https://tripsync.framer.website/'); 
+  }, []);
+  return null;
+};
 function App() {
   return (
     <Router>
-      <Container maxWidth="md">
-        <Typography
-          variant="h3"
-          align="center"
-          sx={{ mt: 4, mb: 4, fontWeight: 'bold' }}
-        >
-          Travel Companion App
-        </Typography>
-
+      <Container maxWidth={false}>
         <Routes>
-          <Route path="/" element={<Register />} />
+          <Route path="/" element={<RedirectToFramer />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/edit-profile" element={<PrivateRoute><EditProfile /></PrivateRoute>} />

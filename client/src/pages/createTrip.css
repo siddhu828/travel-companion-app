@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kollektif&display=swap');
+
+.create-trip-outer-border {
+  border: 4px solid black;
+  margin: 0 auto;
+  padding: 0;
+  background-color: white;
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  max-width: 1440px;
+}
+
+.create-trip-navbar {
+  width: 100%;
+  border-bottom: 4px solid black;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: 22px;
+}
+
+.welcome-user {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 12px;
+}
+
+.user-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.navbar-buttons button {
+  margin-left: 10px;
+  padding: 6px 14px;
+  font-weight: bold;
+  font-size: 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.profile-btn {
+  background-color: transparent;
+  color: black;
+  border: 2px solid black;
+}
+
+.logout-btn {
+  background-color: black;
+  color: white;
+  border: none;
+}
+
+/* CENTERED dashboard actions */
+.dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin: 30px 0;
+}
+
+.dashboard-actions button {
+  background-color: #C86139;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-weight: bold;
+  border-radius: 6px;
+  font-size: 16px;
+  font-family: 'Kollektif', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dashboard-actions button:active {
+  background-color: black;
+  color: white;
+}
+
+.go-back {
+  color: #C86139;
+  font-weight: bold;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: 40px;
+}
+
+.trip-title {
+  font-size: 32px;
+  font-family: 'Dela Gothic One', sans-serif;
+  margin: 20px 40px;
+}
+
+.trip-form-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px 40px;
+  gap: 40px;
+}
+
+.trip-doodle {
+  width: 200px;
+  height: auto;
+}
+
+.trip-form {
+  flex: 1;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 40px;
+}
+
+.trip-form input,
+.trip-form textarea {
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 2px solid black;
+  background-color: white;
+  font-family: 'Kollektif', sans-serif;
+}
+
+.save-btn {
+  background-color: #C86139;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+}

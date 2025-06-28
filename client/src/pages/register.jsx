@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { TextField, Button, Typography, Container, Box } from '@mui/material';
+import './authPages.css';
 import API from '../services/api';
 
 function Register() {
@@ -15,70 +15,62 @@ function Register() {
     e.preventDefault();
     try {
       await API.post('/auth/register', formData);
-      alert("User Registered! Please login.");
+      alert("Registered successfully! Please login.");
       navigate('/login');
     } catch (err) {
-      console.error("Register error:", err.response?.data?.msg || err.message);
-      alert(err.response?.data?.msg || "Registration failed");
+      alert(err.response?.data?.msg || "Registration failed.");
     }
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box sx={{ mt: 4, textAlign: 'center' }}>
-        <Typography variant="h5" gutterBottom>
-          Register
-        </Typography>
+    <div className="auth-container">
+      <div className="auth-outer-border">
+        <div className="auth-header" onClick={() => navigate('/')}>
+          <img src="/logo.png" alt="TripSync" className="logo-img" />
+          <span className="logo-text">TripSync</span>
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <TextField
-            fullWidth
-            label="Name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            margin="normal"
-            required
-          />
-          <TextField
-            fullWidth
-            label="Email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            margin="normal"
-            required
-            type="email"
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            margin="normal"
-            required
-            type="password"
-          />
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            type="submit"
-            sx={{ mt: 2 }}
-          >
-            Register
-          </Button>
-        </form>
+        <div className="auth-main">
+          <img src="/1p.svg" alt="left" className="auth-doodle left" />
+          <div className="auth-form-box">
+            <h2 className="auth-title">REGISTER</h2>
+            <form onSubmit={handleSubmit}>
+              <input
+                type="text"
+                name="name"
+                placeholder="Name*"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email*"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password*"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+              <button type="submit" className="submit-btn">Register</button>
+            </form>
+            <p className="auth-footer-link">
+              Already have an account? <Link to="/login">Login here</Link>
+            </p>
+          </div>
+          <img src="/2p.svg" alt="right" className="auth-doodle right" />
+        </div>
 
-        <Typography variant="body1" sx={{ mt: 2 }}>
-          Already have an account?{' '}
-          <Link to="/login" style={{ fontWeight: 'bold' }}>
-            Login here
-          </Link>
-        </Typography>
-      </Box>
-    </Container>
+        <footer className="auth-footer">© 2025 TripSync. All rights reserved.</footer>
+      </div>
+    </div>
   );
 }
 

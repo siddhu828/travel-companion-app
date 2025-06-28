@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
-import { Link } from 'react-router-dom';
-import {
-  Card,
-  CardContent,
-  Typography,
-  Button,
-  Grid,
-  Avatar,
-  Box
-} from '@mui/material';
+import { useNavigate, Link } from 'react-router-dom';
+import './explore.css';
 
 const toSentenceCase = (str) => {
   if (!str) return '';
@@ -23,6 +15,7 @@ const toSentenceCase = (str) => {
 const Explore = () => {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('user'));
@@ -34,7 +27,6 @@ const Explore = () => {
 
   useEffect(() => {
     if (!currentUserId) return;
-
     const fetchUsers = async () => {
       try {
         const res = await api.get(`/user/all?exclude=${currentUserId}`);
@@ -43,75 +35,58 @@ const Explore = () => {
         console.error('❌ Error fetching users:', err);
       }
     };
-
     fetchUsers();
   }, [currentUserId]);
 
+  const stored = JSON.parse(localStorage.getItem('user'));
+  const user = stored?.user || stored;
+
   return (
-    <Box sx={{ p: 4 }}>
-      <Box textAlign="center" mb={2}>
-        <Button component={Link} to="/dashboard" variant="outlined">
-          ← Back to Dashboard
-        </Button>
-      </Box>
+    <div className="explore-outer-border">
+      <div className="explore-navbar">
+        <div className="welcome-user" onClick={() => navigate('/dashboard')}>
+          <img src="/uuss.svg" alt="User Icon" className="user-icon" />
+          <span>Welcome {user?.name || 'User'}</span>
+        </div>
+        <div className="navbar-buttons">
+          <button className="profile-btn" onClick={() => navigate(`/user/${currentUserId}`)}>Profile</button>
+          <button className="logout-btn" onClick={() => { localStorage.clear(); navigate('/login'); }}>Logout</button>
+        </div>
+      </div>
 
-      <Typography variant="h5" gutterBottom textAlign="center">
-        Explore Users
-      </Typography>
-
-      <Grid container spacing={3} justifyContent="center">
+      <div className="dashboard-actions">
+        <button onClick={() => navigate('/create-trip')}>CREATE TRIP</button>
+        <button>EXPLORE</button>
+        <button onClick={() => navigate('/match')}>FIND MATCHES</button>
+        <button onClick={() => navigate('/inbox')}>INBOX</button>
+        <button onClick={() => navigate('/edit-profile')}>EDIT PROFILE</button>
+        <button onClick={() => navigate('/trips/' + currentUserId)}>TRIP DETAILS</button>
+      </div>
+      
+      <div className="go-back" onClick={() => navigate('/dashboard')}>← Go Back</div>
+      <h2 className="explore-title">Explore Users</h2>
+      <div className="user-grid">
         {users.map((user) => (
-          <Grid item key={user._id}>
-            <Card
-              sx={{
-                height: 280,
-                width: 240,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                p: 2
-              }}
-            >
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Avatar
-                  sx={{ width: 56, height: 56, mx: 'auto', mb: 1 }}
-                  src={user.profilePicture}
-                >
-                  {user.name?.charAt(0).toUpperCase()}
-                </Avatar>
-
-                <Typography variant="h6" fontWeight="bold">
-                  {toSentenceCase(user.name)}
-                </Typography>
-
-                <Typography variant="body2" color="text.secondary">
-                  {user.bio || 'No bio yet'}
-                </Typography>
-
-                <Typography variant="body2">
-                  <strong>Gender:</strong> {user.gender || 'N/A'}
-                </Typography>
-
-                <Typography variant="body2">
-                  <strong>Age:</strong> {user.age || 'N/A'}
-                </Typography>
-              </CardContent>
-
-              <Box textAlign="center">
-                <Button
-                  variant="contained"
-                  size="small"
-                  component={Link}
-                  to={`/chat/${user._id}`}
-                >
-                  Chat
-                </Button>
-              </Box>
-            </Card>
-          </Grid>
+          <div key={user._id} className="user-card">
+            <div className="avatar-circle">
+              {user.profilePicture ? (
+                <img src={user.profilePicture} alt={user.name} className="profile-img" />
+              ) : (
+                user.name?.charAt(0).toUpperCase()
+              )}
+            </div>
+            <h3>{toSentenceCase(user.name)}</h3>
+            <p>{user.bio || 'No bio yet'}</p>
+            <p><strong>Gender:</strong> {user.gender || 'N/A'}</p>
+            <p><strong>Age:</strong> {user.age || 'N/A'}</p>
+            <div className="card-buttons">
+              <button onClick={() => navigate(`/user-trips/${user._id}`)}>Trips</button>
+              <button onClick={() => navigate(`/chat/${user._id}`)}>Chat</button>
+            </div>
+          </div>
         ))}
-      </Grid>
-    </Box>
+      </div>
+    </div>
   );
 };
 

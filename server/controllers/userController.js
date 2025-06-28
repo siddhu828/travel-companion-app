@@ -40,26 +40,47 @@ exports.updateProfile = async (req, res) => {
 exports.getPotentialMatches = async (req, res) => {
   try {
     const userId = req.params.userId;
-    const currentUser = await User.findById(userId);
+    const currentUser = await User.findById(userId).populate('trips');
 
     if (!currentUser) return res.status(404).json({ msg: 'User not found' });
 
-    // Match logic
-    const matches = await User.find({
-      _id: { $ne: userId }, // ❌ Exclude self
-      'trips.destination': { $in: currentUser.trips.map(t => t.destination) }, // ✅ Common destination
-      'trips.startDate': { $lte: new Date(currentUser.trips[0].endDate) },
-      'trips.endDate': { $gte: new Date(currentUser.trips[0].startDate) },
-      interests: { $in: currentUser.interests }, // ✅ Shared interest
-    }).select('-password');
+    const liked = currentUser.likedUsers || [];
+    const skipped = currentUser.skippedUsers || [];
 
-    res.json(matches);
+    // 🚩 Collect all interests from the user's trips
+    const userTripInterests = currentUser.trips.flatMap(trip => trip.interests || []);
+    const userTrips = currentUser.trips;
+
+    const allUsers = await User.find({ 
+      _id: { $nin: [userId, ...liked, ...skipped] } 
+    }).populate('trips').select('-password');
+
+    const potentialMatches = allUsers.filter(otherUser => {
+      if (!otherUser.trips || otherUser.trips.length === 0) return false;
+
+      // 🔁 Check for trip interest overlap
+      const hasCommonInterest = otherUser.trips.some(trip =>
+        trip.interests?.some(i => userTripInterests.includes(i))
+      );
+
+      // 🔁 Check for trip date + destination overlap
+      const hasMatchingTrip = otherUser.trips.some(theirTrip =>
+        userTrips.some(myTrip =>
+          theirTrip.destination === myTrip.destination &&
+          new Date(theirTrip.startDate) <= new Date(myTrip.endDate) &&
+          new Date(theirTrip.endDate) >= new Date(myTrip.startDate)
+        )
+      );
+
+      return hasCommonInterest && hasMatchingTrip;
+    });
+
+    res.json(potentialMatches);
   } catch (err) {
     console.error('❌ Match error:', err.message);
     res.status(500).json({ msg: 'Server error while matching' });
   }
 };
-
 // Like a user
 exports.likeUser = async (req, res) => {
     try {

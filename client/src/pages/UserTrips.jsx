@@ -1,20 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
-import {
-  Typography,
-  Button,
-  Card,
-  CardContent,
-  Box,
-  Stack,
-  Divider
-} from '@mui/material';
- 
-const formatDate = (dateStr) => {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-GB');
-};
+import './tripdetails.css';
 
 const toSentenceCase = (str) => {
   if (!str) return '';
@@ -25,72 +12,108 @@ const toSentenceCase = (str) => {
     .join(' ');
 };
 
+const formatDate = (dateStr) => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-GB');
+};
+
 const UserTrips = () => {
   const { userId } = useParams();
+  const navigate = useNavigate();
+  const stored = JSON.parse(localStorage.getItem('user'));
+  const currentUser = stored?.user || stored;
+
   const [trips, setTrips] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!userId) return;
     const fetchTrips = async () => {
       try {
         const res = await api.get(`/trips/${userId}`);
         setTrips(res.data);
       } catch (err) {
-        console.error("❌ Error fetching trips:", err);
+        console.error("❌ Error fetching user trips:", err);
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchTrips();
   }, [userId]);
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
+  };
+
+  const handleProfile = () => {
+    navigate(`/user/${currentUser?._id}`);
+  };
+
+  if (loading) {
+    return (
+      <div className="tripdetails-wrapper">
+        <p className="loading-text">Loading trips...</p>
+      </div>
+    );
+  }
+
+  if (trips.length === 0) {
+    return (
+      <div className="tripdetails-wrapper">
+        <p className="loading-text">No trips found.</p>
+      </div>
+    );
+  }
+
   return (
-    <Box sx={{ p: 4 }}>
-      <Box textAlign="center" mb={3}>
-        <Button component={Link} to="/dashboard" variant="outlined">
-          ← Back to Dashboard
-        </Button>
-      </Box>
+    <div className="tripdetails-wrapper">
+      <div className="dashboard-navbar">
+        <div className="welcome-user" onClick={() => navigate('/dashboard')}>
+          <img src="/uuss.svg" alt="User Icon" className="user-icon" />
+          <span>Welcome {currentUser?.name || 'User'}</span>
+        </div>
+        <div className="navbar-buttons">
+          <button className="profile-btn" onClick={handleProfile}>Profile</button>
+          <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        </div>
+      </div>
 
-      <Typography variant="h5" gutterBottom textAlign="center">
-        User's Trips
-      </Typography>
+      <div className="dashboard-actions">
+        <button onClick={() => navigate('/create-trip')}>CREATE TRIP</button>
+        <button onClick={() => navigate('/explore')}>EXPLORE</button>
+        <button onClick={() => navigate('/match')}>FIND MATCHES</button>
+        <button onClick={() => navigate('/inbox')}>INBOX</button>
+        <button onClick={() => navigate('/edit-profile')}>EDIT PROFILE</button>
+        <button onClick={() => navigate(`/trips/${currentUser?._id}`)}>TRIP DETAILS</button>
+      </div>
 
-      {trips.length === 0 ? (
-        <Typography align="center" mt={2}>
-          No trips found for this user.
-        </Typography>
-      ) : (
-        <Stack spacing={2} mt={3}>
-          {trips.map((trip) => (
-            <Card key={trip._id} elevation={3}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  {toSentenceCase(trip.destination)}
-                </Typography>
+      <div className="go-back" onClick={() => navigate('/dashboard')}>← Go Back</div>
+      <h2 className="tripdetails-title">User's Trips</h2>
 
-                <Typography variant="body2" color="text.secondary">
-                  <strong>From:</strong> {formatDate(trip.startDate)} | <strong>To:</strong> {formatDate(trip.endDate)}
-                </Typography>
-
-                <Typography variant="body2" sx={{ mt: 1 }}>
-                  <strong>Travel Type:</strong> {trip.travelType || 'N/A'}
-                </Typography>
-
-                <Typography variant="body2">
-                  <strong>Interests:</strong> {trip.interests.join(', ') || 'N/A'}
-                </Typography>
-
-                {trip.description && (
-                  <>
-                    <Divider sx={{ my: 1 }} />
-                    <Typography>{trip.description}</Typography>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </Stack>
-      )}
-    </Box>
+      <div className="tripdetails-cards">
+        {trips.map((trip) => (
+          <div className="tripdetails-card" key={trip._id}>
+            <p><strong>Destination:</strong> <span className="orange">{toSentenceCase(trip.destination)}</span></p>
+            <p><strong>Dates:</strong> <span className="orange">{formatDate(trip.startDate)} to {formatDate(trip.endDate)}</span></p>
+            {trip.travelType && (
+              <p><strong>Travel Type:</strong> <span className="orange">{toSentenceCase(trip.travelType)}</span></p>
+            )}
+            {trip.description && (
+              <p><strong>Description:</strong> <span className="orange">{toSentenceCase(trip.description)}</span></p>
+            )}
+            {trip.interests?.length > 0 && (
+              <p>
+                <strong>Interests:</strong>{' '}
+                {trip.interests.map((interest, idx) => (
+                  <span key={idx} className="interest-chip">{toSentenceCase(interest)}</span>
+                ))}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 

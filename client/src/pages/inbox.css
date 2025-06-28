@@ -1,0 +1,86 @@
+.go-back-container {
+    margin-left: 40px;
+    margin-bottom: 10px;
+  }
+  
+  .go-back-btn {
+    font-size: 16px;
+    font-family: 'Kollektif', sans-serif;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #C86139;
+    font-weight: bold;
+  }
+  
+  .your-chats-title {
+    font-size: 24px;
+    font-family: 'Dela Gothic One', sans-serif;
+    margin-left: 40px;
+    margin-bottom: 20px;
+  }
+  
+  .inbox-cards-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 0 40px 40px;
+  }
+  
+  .inbox-doodle {
+    /* width: 150px; */
+    height: auto;
+    /* margin-bottom: -100px; */
+    margin-top: 50px;
+  }
+  
+  .chat-cards {
+    flex: 1;
+    padding: 0px 20px;
+  }
+  
+  .chat-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid black;
+    padding: 10px 24px;
+    margin-bottom: 18px;
+    background-color: white;
+    border-radius: 6px;
+    font-family: 'Kollektif', sans-serif;
+    font-size: 22px;
+  }
+  
+  .chat-details {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .chat-name {
+    font-weight: bold;
+    font-size: 30px;
+  }
+  
+  .chat-email {
+    color: gray;
+    margin-top: -20px;
+    font-size: 20px;
+  }
+  
+  .chat-action-btn {
+    background-color: black;
+    color: #C86139;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Kollektif', sans-serif;
+    font-weight: bold;
+    font-size: 20px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .chat-action-btn:hover {
+    background-color: #333;
+  }

@@ -1,21 +1,15 @@
 import React, { useState } from 'react';
-import {
-  Container,
-  TextField,
-  Button,
-  Typography,
-  Stack,
-  Box,
-  Avatar
-} from '@mui/material';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import './editprofile.css';
 
 const EditProfile = () => {
+  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
+  const userId = user?.user?._id || user?.user?.id;
 
   const [formData, setFormData] = useState({
-    userId: user?.user?._id || user?.user?.id,
+    userId: userId,
     name: user?.user?.name || '',
     age: '',
     gender: '',
@@ -24,35 +18,33 @@ const EditProfile = () => {
     profilePicture: ''
   });
 
+  const [uploading, setUploading] = useState(false);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const [uploading, setUploading] = useState(false);
+  const handleCloudinaryUpload = async (e) => {
+    const file = e.target.files[0];
+    const data = new FormData();
+    data.append('file', file);
+    data.append('upload_preset', 'travelapp_unsigned');
+    data.append('cloud_name', 'dzve0febp');
 
-const handleCloudinaryUpload = async (e) => {
-  const file = e.target.files[0];
-  const data = new FormData();
-  data.append('file', file);
-  data.append('upload_preset', 'travelapp_unsigned');
-  data.append('cloud_name', 'dzve0febp');
-
-  setUploading(true);
-  try {
-    const res = await fetch('https://api.cloudinary.com/v1_1/dzve0febp/image/upload', {
-      method: 'POST',
-      body: data
-    });
-    const result = await res.json();
-    console.log("✅ Uploaded to Cloudinary:", result.secure_url);
-    setFormData((prev) => ({ ...prev, profilePicture: result.secure_url }));
-  } catch (err) {
-    console.error('❌ Cloudinary upload failed:', err);
-    alert("Failed to upload image.");
-  } finally {
-    setUploading(false);
-  }
-};
+    setUploading(true);
+    try {
+      const res = await fetch('https://api.cloudinary.com/v1_1/dzve0febp/image/upload', {
+        method: 'POST',
+        body: data
+      });
+      const result = await res.json();
+      setFormData((prev) => ({ ...prev, profilePicture: result.secure_url }));
+    } catch (err) {
+      alert("Failed to upload image.");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,89 +55,78 @@ const handleCloudinaryUpload = async (e) => {
         age: parseInt(formData.age),
         gender: formData.gender,
         bio: formData.bio,
-        interests: formData.interests.split(',').map((i) => i.trim()),
+        interests: formData.interests.split(',').map(i => i.trim()),
         profilePicture: formData.profilePicture
       };
 
-      const res = await api.put('/user/profile', payload);
+      await api.put('/user/profile', payload);
       alert('✅ Profile updated!');
-      console.log('Updated profile:', res.data);
     } catch (err) {
-      console.error('❌ React API Error:', err.response?.data || err.message);
       alert('Update failed');
     }
   };
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
+  };
+
+  const handleProfile = () => {
+    navigate(`/user/${userId}`);
+  };
+
   return (
-    <Container maxWidth="sm" sx={{ mt: 6 }}>
-      <Button component={Link} to="/dashboard" variant="outlined" sx={{ mb: 2 }}>
-        ← Back to Dashboard
-      </Button>
+    <div className="editprofile-outer-border">
+      <div className="editprofile-navbar">
+        <div className="welcome-user" onClick={() => navigate('/dashboard')}>
+          <img src="/uuss.svg" alt="User Icon" className="user-icon" />
+          <span>Welcome {user?.user?.name || 'User'}</span>
+        </div>
+        <div className="navbar-buttons">
+          <button className="profile-btn" onClick={handleProfile}>Profile</button>
+          <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        </div>
+      </div>
+      
+      <div className="dashboard-actions">
+        <button onClick={() => navigate('/create-trip')}>CREATE TRIP</button>
+        <button onClick={() => navigate('/explore')}>EXPLORE</button>
+        <button onClick={() => navigate('/match')}>FIND MATCHES</button>
+        <button onClick={() => navigate('/inbox')}>INBOX</button>
+        <button>EDIT PROFILE</button>
+        <button onClick={() => navigate('/trips/' + userId)}>TRIP DETAILS</button>
+      </div>
+      <div className="go-back-container">
+        <button className="go-back-btn" onClick={() => navigate('/dashboard')}>
+          ← Go Back
+        </button>
+      </div>
+      <h2 className="editprofile-title">Edit Profile</h2>
+      <form className="editprofile-form" onSubmit={handleSubmit}>
+        {/* <label>Name:</label> */}
+        <input type="text" name="name" placeholder="Name" value={formData.name} onChange={handleChange} required />
 
-      <Typography variant="h4" gutterBottom>
-        Edit Profile
-      </Typography>
+        {/* <label>Age:</label> */}
+        <input type="number" name="age" placeholder="Age" value={formData.age} onChange={handleChange} />
 
-      <Box component="form" onSubmit={handleSubmit} noValidate>
-        <Stack spacing={2}>
-          <TextField
-            name="name"
-            label="Name"
-            value={formData.name}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
-          <TextField
-            name="age"
-            label="Age"
-            type="number"
-            value={formData.age}
-            onChange={handleChange}
-            fullWidth
-          />
-          <TextField
-            name="gender"
-            label="Gender"
-            value={formData.gender}
-            onChange={handleChange}
-            fullWidth
-          />
-          <TextField
-            name="bio"
-            label="Bio"
-            multiline
-            rows={3}
-            value={formData.bio}
-            onChange={handleChange}
-            fullWidth
-          />
-          <TextField
-            name="interests"
-            label="Interests (comma separated)"
-            value={formData.interests}
-            onChange={handleChange}
-            fullWidth
-          />
+        {/* <label>Gender:</label> */}
+        <input type="text" name="gender" placeholder="Gender" value={formData.gender} onChange={handleChange} />
 
-          <div>
-            <label>Upload Profile Picture</label><br />
-            <input type="file" onChange={handleCloudinaryUpload} />
-            {formData.profilePicture && (
-              <Avatar
-                src={formData.profilePicture}
-                alt="Preview"
-                sx={{ width: 80, height: 80, mt: 1 }}
-              />
-            )}
-          </div>
+        {/* <label>Bio:</label> */}
+        <textarea name="bio" rows="3" placeholder="Bio:" value={formData.bio} onChange={handleChange}></textarea>
 
-          <Button type="submit" variant="contained" color="primary" disabled={uploading}>
-            {uploading ? 'Uploading...' : 'Save Profile'}
-          </Button>
-        </Stack>
-      </Box>
-    </Container>
+        {/* <label>Hobbies:</label> */}
+        <input type="text" name="hobbies" placeholder="Hobbies" value={formData.interests} onChange={handleChange} />
+
+        <label><strong>Upload Profile Picture:</strong></label>
+        <input type="file" onChange={handleCloudinaryUpload} />
+        {formData.profilePicture && <img src={formData.profilePicture} alt="Uploaded" className="preview-img" />}
+
+        <button type="submit" disabled={uploading}>
+          {uploading ? 'Uploading...' : 'Save Profile'}
+        </button>
+      </form>
+    </div>
   );
 };
 
