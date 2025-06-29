@@ -38,7 +38,7 @@ const { Server } = require('socket.io');
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // frontend
+    origin: "https://travel-companion-app-ten.vercel.app", // frontend
     methods: ["GET", "POST"]
   }
 });
