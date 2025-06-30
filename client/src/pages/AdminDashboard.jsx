@@ -41,7 +41,7 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await api.get('/api/user/all');
+      const res = await api.get('/user/all');
       setUsers(res.data);
       setFilteredUsers(res.data);
     } catch (err) {
@@ -51,7 +51,7 @@ const AdminDashboard = () => {
 
   const fetchTrips = async () => {
     try {
-      const res = await api.get('/api/trips');
+      const res = await api.get('/trips');
       setTrips(res.data);
     } catch (err) {
       console.error('Error fetching trips:', err);
@@ -61,7 +61,7 @@ const AdminDashboard = () => {
   const handleDeleteUser = async (userId) => {
     if (window.confirm('Delete this user?')) {
       try {
-        await api.delete(`/api/user/${userId}`);
+        await api.delete(`/user/${userId}`);
         fetchUsers();
       } catch (err) {
         console.error('Error deleting user:', err);
@@ -72,7 +72,7 @@ const AdminDashboard = () => {
   const handleDeleteTrip = async (tripId) => {
     if (window.confirm('Delete this trip?')) {
       try {
-        await api.delete(`/api/trips/${tripId}`);
+        await api.delete(`/trips/${tripId}`);
         fetchTrips();
       } catch (err) {
         console.error('Error deleting trip:', err);
@@ -97,7 +97,7 @@ const AdminDashboard = () => {
 
   const handleToggleBan = async (userId) => {
     try {
-      await api.put(`/api/user/ban/${userId}`);
+      await api.put(`/user/ban/${userId}`);
       fetchUsers();
     } catch (err) {
       console.error("Error banning/unbanning user:", err);

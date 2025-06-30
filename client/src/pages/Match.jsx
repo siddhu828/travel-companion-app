@@ -28,7 +28,7 @@ const Match = () => {
 
     const fetchMatches = async () => {
       try {
-        const res = await api.get(`/api/user/matches/${currentUserId}`);
+        const res = await api.get(`/user/matches/${currentUserId}`);
         setMatches(res.data);
       } catch (err) {
         console.error('❌ Error fetching matches:', err);

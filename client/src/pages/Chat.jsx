@@ -26,7 +26,7 @@ const Chat = () => {
 
     const fetchChat = async () => {
       try {
-        const res = await api.get(`/api/messages/${currentUser._id}/${contactId}`);
+        const res = await api.get(`/messages/${currentUser._id}/${contactId}`);
         setMessages(res.data);
       } catch (err) {
         console.error("❌ Error fetching messages:", err);
@@ -62,7 +62,7 @@ const Chat = () => {
     };
 
     try {
-      await api.post('/api/messages/send', newMsg);
+      await api.post('/messages/send', newMsg);
       socket.emit('send_message', newMsg);
       setMessages((prev) => [...prev, newMsg]);
       setText('');

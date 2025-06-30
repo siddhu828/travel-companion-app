@@ -28,7 +28,7 @@ const CreateTrip = () => {
         ...tripData,
         interests: tripData.interests.split(',').map((i) => i.trim())
       };
-      await api.post('/api/trips', payload);
+      await api.post('/trips', payload);
       alert('🎉 Trip created successfully!');
     } catch (err) {
       console.error(err);
