@@ -14,7 +14,7 @@ const Inbox = () => {
 
     const fetchContacts = async () => {
       try {
-        const res = await api.get(`/messages/contacts/${currentUser._id}`);
+        const res = await api.get(`/api/messages/contacts/${currentUser._id}`);
         setContacts(res.data);
       } catch (err) {
         console.error('❌ Error fetching chat contacts:', err);

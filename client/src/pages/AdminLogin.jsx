@@ -14,7 +14,7 @@ function AdminLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await API.post('/admin/admin-login', formData);
+      const res = await API.post('/api/admin/admin-login', formData);
       if (!res.data.isAdmin) {
         alert("Not authorized as admin.");
         return;

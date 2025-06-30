@@ -29,7 +29,7 @@ const Explore = () => {
     if (!currentUserId) return;
     const fetchUsers = async () => {
       try {
-        const res = await api.get(`/user/all?exclude=${currentUserId}`);
+        const res = await api.get(`/api/user/all?exclude=${currentUserId}`);
         setUsers(res.data);
       } catch (err) {
         console.error('❌ Error fetching users:', err);

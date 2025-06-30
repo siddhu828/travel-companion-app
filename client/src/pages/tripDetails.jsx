@@ -29,7 +29,7 @@ const TripDetails = () => {
     if (!userId) return;
     const fetchTrips = async () => {
       try {
-        const res = await api.get(`/trips/${userId}`);
+        const res = await api.get(`/api/trips/${userId}`);
         setTrips(res.data);
       } catch (err) {
         console.error("❌ Error fetching trips:", err);

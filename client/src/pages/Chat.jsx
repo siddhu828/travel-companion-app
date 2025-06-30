@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
 import { io } from 'socket.io-client';
-import './chat.css'; // you'll create styles here
+import './chat.css'; 
 
-const socket = io("http://localhost:5050");
+const socket = io("https://travel-companion-app-1nns.onrender.com");
 
 const Chat = () => {
   const { contactId } = useParams();
@@ -26,7 +26,7 @@ const Chat = () => {
 
     const fetchChat = async () => {
       try {
-        const res = await api.get(`/messages/${currentUser._id}/${contactId}`);
+        const res = await api.get(`/api/messages/${currentUser._id}/${contactId}`);
         setMessages(res.data);
       } catch (err) {
         console.error("❌ Error fetching messages:", err);
@@ -62,7 +62,7 @@ const Chat = () => {
     };
 
     try {
-      await api.post('/messages/send', newMsg);
+      await api.post('/api/messages/send', newMsg);
       socket.emit('send_message', newMsg);
       setMessages((prev) => [...prev, newMsg]);
       setText('');

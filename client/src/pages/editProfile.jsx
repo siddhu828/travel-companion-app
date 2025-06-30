@@ -59,7 +59,7 @@ const EditProfile = () => {
         profilePicture: formData.profilePicture
       };
 
-      await api.put('/user/profile', payload);
+      await api.put('/api/user/profile', payload);
       alert('✅ Profile updated!');
     } catch (err) {
       alert('Update failed');

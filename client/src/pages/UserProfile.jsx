@@ -23,7 +23,7 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await api.get(`/user/profile/${userId}`);
+        const res = await api.get(`/api/user/profile/${userId}`);
         setUser(res.data);
       } catch (err) {
         console.error('Error fetching user profile:', err);
