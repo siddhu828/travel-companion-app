@@ -6,7 +6,7 @@ const TripSchema = new mongoose.Schema({
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
   interests: [String],
-  travelType: String, // e.g., Adventure, Cultural, Relaxation
+  travelType: String, 
   description: String
 }, { timestamps: true });
 

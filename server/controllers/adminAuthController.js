@@ -1,4 +1,4 @@
-const Admin = require('../models/adminM'); // Make sure the path matches your renamed file
+const Admin = require('../models/adminM');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
